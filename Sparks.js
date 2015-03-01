@@ -665,8 +665,8 @@ SPARKS.CubeZone.prototype.contains = function(position) {
  * in the center of the disc. If set to zero, there is no hole.
  */
 
-/*
-// BUGGY!!
+
+
 SPARKS.DiscZone = function(center, radiusNormal, outerRadius, innerRadius) {
     this.center = center;
 	this.radiusNormal = radiusNormal;
@@ -700,7 +700,7 @@ SPARKS.DiscZone.prototype.getLocation = function() {
 	return _center.add( p );
 
 };
-*/
+
 
 SPARKS.SphereCapZone = function(x, y, z, minr, maxr, angle) {
     this.x = x;
