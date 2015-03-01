@@ -17,6 +17,10 @@ It uses [three.js](https://github.com/mrdoob/three.js) for Vector classes and re
 - http://jabtunes.com/itcameupon/
 
 ####Examples Online####
+- [Particle Shapes] https://cdn.rawgit.com/Baccanno/sparks.js/master/examples/canvas_particles_shapes.html
+- You can use rawgit to visualise the other demos
+
+Sparks.js older versions :
 - [Particle Tests](http://jsdo.it/zz85/27tB/fullscreen)
 - [Brillance Particles + Custom Shapes](http://jsdo.it/zz85/x8Gf)
 - [Realtime Sparks.js Editor by Jerome Etienne](https://github.com/jeromeetienne/sparkseditor) 
