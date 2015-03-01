@@ -353,7 +353,7 @@ SPARKS.Action = function() {
 
 
 SPARKS.Age = function(easing) {
-    this._easing = (easing == null) ? TWEEN.Easing.Linear.None : easing;
+    this._easing = (easing == null) ? function(t){ return t; } : easing;
 };
 
 SPARKS.Age.prototype.update = function (emitter, particle, time) {
