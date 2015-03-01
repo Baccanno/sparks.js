@@ -10,6 +10,20 @@
  */
 
 var SPARKS = {};
+/********************************
+ * Update
+ *
+ *   Creates and Manages Particles
+ *********************************/
+SPARKS._emitters = [];
+SPARKS.update = function( delta ) {
+    var emitter, now = Date.now();
+    for (var i = 0; i < SPARKS._emitters.length; ++i ){
+        emitter = SPARKS._emitters[i];
+        if (emitter._isRunning && emitter._lastTime + emitter._timerStep < now)
+            emitter.step(emitter);
+    }
+}
 
 /********************************
 * Emitter Class
@@ -46,13 +60,16 @@ SPARKS.Emitter.prototype = {
 	// run its built in timer / stepping
 	start: function() {
 		this._lastTime = Date.now();
-		this._timer = setTimeout(this.step, this._timerStep, this);
+		//this._timer = setTimeout(this.step, this._timerStep, this);
+        if( SPARKS._emitters.indexOf( this ) == -1 )
+            SPARKS._emitters.push( this );
 		this._isRunning = true;
 	},
 
 	stop: function() {
 		this._isRunning = false;
-		clearTimeout(this._timer);
+		//clearTimeout(this._timer);
+        SPARKS._emitters.slice( SPARKS._emitters.indexOf( this ), 1 );
 	},
     kill: function(){
         this._isDying = true;
@@ -93,8 +110,8 @@ SPARKS.Emitter.prototype = {
 
 
 
-		if (emitter._isRunning)
-		setTimeout(emitter.step, emitter._timerStep, emitter);
+		//if (emitter._isRunning)
+		//setTimeout(emitter.step, emitter._timerStep, emitter);
 
 	},
 
