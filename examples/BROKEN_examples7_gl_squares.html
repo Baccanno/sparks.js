@@ -35,6 +35,13 @@
 
 			<script type="text/javascript" src="js/Tween.js"></script>
 			<script type="text/javascript" src="../Sparks.js"></script>
+			<script type="text/javascript" src="js/ShaderExtras.js"></script> 
+			<script type="text/javascript" src="js/postprocessing/EffectComposer.js"></script> 
+			<script type="text/javascript" src="js/postprocessing/RenderPass.js"></script> 
+			<script type="text/javascript" src="js/postprocessing/ShaderPass.js"></script> 
+			<script type="text/javascript" src="js/postprocessing/MaskPass.js"></script> 
+			<script type="text/javascript" src="js/postprocessing/BloomPass.js"></script> 
+			<script type="text/javascript" src="js/postprocessing/FilmPass.js"></script> 
 			
 				
 				<script type="x-shader/x-vertex" id="vertexshader"> 
@@ -81,11 +88,11 @@
 
 						gl_FragColor = outColor * vec4( color * vColor.xyz, 1.0 );
 
-						float depth = gl_FragCoord.z / gl_FragCoord.w;
-						const vec3 fogColor = vec3( 0.0 );
+						//float depth = gl_FragCoord.z / gl_FragCoord.w;
+						///const vec3 fogColor = vec3( 0.0 );
 
-						float fogFactor = smoothstep( 200.0, 600.0, depth );
-						gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );
+						//float fogFactor = smoothstep( 200.0, 600.0, depth );
+						//gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );
 
 					}
 
@@ -103,12 +110,12 @@
 			var windowHalfY = window.innerHeight / 2;
 
 			var lasttime = Date.now(), elapsed;
-			var composer;
 			
 			init();
 			animate();
 			
 			var sparksEmitter;
+			var composer;
 
 			function init() {
 
@@ -122,8 +129,7 @@
 
 				var PI2 = Math.PI * 2;
 				
-				
-				var particleslength = 50000;
+				var particleslength = 10000;
 				
 				var particles = new THREE.Geometry();
 				
@@ -167,8 +173,6 @@
 				
 				// Create pools of vectors
 
-				//A
-				
 				attributes = {
 
 					size: {	type: 'f', value: [] },
@@ -176,16 +180,9 @@
 
 				};
 				
-				//B
-
-
 				var sprite = generateSprite() ;
-				var idata = sprite[1]
-				var canvasTexture = sprite[0];
-				textu = new THREE.Texture ( canvasTexture );
+				textu = new THREE.Texture ( sprite );
 				textu.needsUpdate = true;
-				// var textu = new THREE.DataTexture (new Uint8Array(idata.data), 128,128);
-				// textu.needsUpdate = true;
 
 				uniforms = {
 
@@ -209,50 +206,65 @@
 				
 					context.fillStyle = "white";
 					context.strokeStyle = "white";
+					
+					//context.fillRect(0, 0, 128, 128) ;
+					
+		context.beginPath();
+		context.arc( 64, 64, 64, 0, PI2, true );
+		context.closePath();
+		context.fill();
+				
+					//context.lineWidth = 0.5; //0.05
+					//context.stroke();
+					//context.fill();
+					
+					//var idata =context.getImageData(0, 0, canvas.width, canvas.height);
+					//document.body.appendChild(canvas);
+					return canvas;
+				
+				}
+				
+				function generateSprite() {
+							
+					var canvas = document.createElement( 'canvas' );
+					canvas.width = 128;
+					canvas.height = 128;
+				
+					var context = canvas.getContext( '2d' );
+					
+					
 					context.beginPath();
 					context.arc(64, 64, 60, 0, Math.PI*2, false);
-				
 					context.closePath();
-
+					
 					context.lineWidth = 0.5; //0.05
 					context.stroke();
-						
-					var gradient = context.createRadialGradient( canvas.width /2, canvas.height /2, 0, canvas.width /2, canvas.height /2, canvas.width /2 );
-					// gradient.addColorStop( 0, 'rgba(255,255,255,1)' );
-					// gradient.addColorStop( 0.2, 'rgba(255,255,255,1)' );
-					// gradient.addColorStop( 0.8, 'rgba(128,128,128,1)' );
-					// gradient.addColorStop( 1, 'rgba(0,0,0,1)' );
 
+					var gradient = context.createRadialGradient( canvas.width /2, canvas.height /2, 0, canvas.width /2, canvas.height /2, canvas.width /2 );				
 					gradient.addColorStop( 0, 'rgba(255,255,255,1)' );
 					gradient.addColorStop( 0.2, 'rgba(255,255,255,1)' );
 					//gradient.addColorStop( 0.6, 'rgba(200,200,200,1)' );
 					gradient.addColorStop( 0.4, 'rgba(128,128,128,1)' );
 					gradient.addColorStop( 1, 'rgba(0,0,0,1)' );
-
-						
 					context.fillStyle = gradient;
 					
 					context.fill();
-				
 					
-					var idata =context.getImageData(0, 0, canvas.width, canvas.height);
-					document.body.appendChild(canvas);
-					return [canvas, idata];
+					return canvas;
 				
 				}
-				
 
 				var shaderMaterial = new THREE.MeshShaderMaterial( {
 
-					uniforms: 		uniforms,
-					attributes:     attributes,
+					uniforms	: uniforms,
+					attributes	: attributes,
 	 
-					vertexShader:   document.getElementById( 'vertexshader' ).textContent,
-					fragmentShader: document.getElementById( 'fragmentshader' ).textContent
-					,
-					blending: 		THREE.AdditiveBlending,
-					depthTest: 		false,
-					transparent:	true
+					vertexShader	: document.getElementById( 'vertexshader' ).textContent,
+					fragmentShader	: document.getElementById( 'fragmentshader' ).textContent,
+
+					blending	: THREE.AdditiveBlending,
+					depthTest	: false,
+					transparent	: true
 				
 				});
 
@@ -289,9 +301,7 @@
 				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
 				document.addEventListener( 'touchmove', onDocumentTouchMove, false );
-				
-		
-				
+								
 				//// EMITTER STUFF
 				var h = 0;
 				var k = 0.7;
@@ -302,7 +312,8 @@
 					
 					// Find available pool
 					var target = Pool.get();
-					values_size[target] = Math.random() * 50+5;
+					//values_size[target] = Math.random() * 20;
+					values_size[target] = 50+Math.random() * 20;
 					
 					return target;
 	
@@ -319,13 +330,12 @@
 						
 						h += 0.001;
 						if (h>1) h-=1;
-						
+						//h = 0.5;
 						particles.vertices[target].position = p.position;
 						
-						values_color[target].setHSV(h, 0.8, 0.15);
+						values_color[target].setHSV(h, 0.8, 0.1); //0.15
 						
 					}; 
-					//
 					
 				};
 				
@@ -344,37 +354,25 @@
 				};
 				
 				
-		
-				emitterpos = new THREE.Vector3(0,0,0);
-					sparksEmitter = new SPARKS.Emitter(new SPARKS.SteadyCounter(5000));
+				sparksEmitter = new SPARKS.Emitter(new SPARKS.SteadyCounter(500));
 
-					var linezone = new SPARKS.LineZone( new THREE.Vector3(-100,0,0), new THREE.Vector3(100,0,0) );
+				emitterpos	= new THREE.Vector3(0,0,0);
+				var sphereCap	= new SPARKS.SphereCapZone(0, 0, 0, 10, 0, 40);
 
-					sparksEmitter.addInitializer(new SPARKS.Position( linezone ) );
-					sparksEmitter.addInitializer(new SPARKS.Lifetime(2,4));
-					sparksEmitter.addInitializer(new SPARKS.Target(null, setTargetParticle));
-					sparksEmitter.addInitializer(new SPARKS.Velocity(new SPARKS.PointZone(new THREE.Vector3(0,-200,50))));
+				sparksEmitter.addInitializer(new SPARKS.Position( new SPARKS.PointZone( emitterpos ) ) );
+				sparksEmitter.addInitializer(new SPARKS.Lifetime(0,8));
+				sparksEmitter.addInitializer(new SPARKS.Target(null, setTargetParticle)); //, setTargetParticle //Pool.get()
+				sparksEmitter.addInitializer(new SPARKS.Velocity(sphereCap));
 
-
-					sparksEmitter.addAction(new SPARKS.Age());
-					sparksEmitter.addAction(new SPARKS.Move()); 
-					sparksEmitter.addAction(new SPARKS.RandomDrift(500,500,0));
+				sparksEmitter.addAction(new SPARKS.Age());
+				sparksEmitter.addAction(new SPARKS.Accelerate(0.2));
+				sparksEmitter.addAction(new SPARKS.Move()); 
 				
 				sparksEmitter.addCallback("created", onParticleCreated);
 				sparksEmitter.addCallback("dead", onParticleDead);
 				
-				sparksEmitter.addCallback("updated", function(p) {
-					var target = particle.target;
-					if (target) {
-						// update energy properties
-						//values_size[target] = Math.random()*100;
-					}
-				});
-		
 
 				sparksEmitter.start();
-				console.log(sparksEmitter);
-
 			}
 
 			// End Init
@@ -417,32 +415,25 @@
 
 				render();
 				stats.update();
+				SPARKS.update();
 
 			}
 			
 			var _rotation = 0;
 
 			function render() {
-				//console.log("render", sparksEmitter._particles.length);
 				
 				group.geometry.__dirtyVertices = true;
 				group.geometry.__dirtyColors = true;
 				attributes.size.needsUpdate = true;
 				attributes.ca.needsUpdate = true;
-				
-				camera.position.x += ( mouseX - camera.position.x ) * 0.05;
-				camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
-				
-				group.rotation.x += 0.01;
-				group.rotation.y += 0.02;
-				
+								
 				_rotation += 3;
 	            
 				emitterpos.x = 100 * Math.sin(_rotation * SPARKS.Utils.DEGREE_TO_RADIAN);
-	            emitterpos.y = 100 * Math.cos(_rotation * SPARKS.Utils.DEGREE_TO_RADIAN);
+				emitterpos.y = 100 * Math.cos(_rotation * SPARKS.Utils.DEGREE_TO_RADIAN);
 
 				renderer.render( scene, camera );
-				
 			}
 
 		</script>

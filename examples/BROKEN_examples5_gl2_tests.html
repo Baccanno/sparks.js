@@ -103,6 +103,7 @@
 			var windowHalfY = window.innerHeight / 2;
 
 			var lasttime = Date.now(), elapsed;
+			var composer;
 			
 			init();
 			animate();
@@ -122,7 +123,7 @@
 				var PI2 = Math.PI * 2;
 				
 				
-				var particleslength = 10000;
+				var particleslength = 50000;
 				
 				var particles = new THREE.Geometry();
 				
@@ -289,7 +290,7 @@
 				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
 				document.addEventListener( 'touchmove', onDocumentTouchMove, false );
 				
-
+		
 				
 				//// EMITTER STUFF
 				var h = 0;
@@ -343,19 +344,21 @@
 				};
 				
 				
-				sparksEmitter = new SPARKS.Emitter(new SPARKS.SteadyCounter(300));
-
+		
 				emitterpos = new THREE.Vector3(0,0,0);
-				var sphereCap = new SPARKS.SphereCapZone(0, 0, 0, 10, 0, 40);
+					sparksEmitter = new SPARKS.Emitter(new SPARKS.SteadyCounter(5000));
 
-				sparksEmitter.addInitializer(new SPARKS.Position( new SPARKS.PointZone( emitterpos ) ) );
-				sparksEmitter.addInitializer(new SPARKS.Lifetime(0,8));
-				sparksEmitter.addInitializer(new SPARKS.Target(null, setTargetParticle)); //, setTargetParticle //Pool.get()
-				sparksEmitter.addInitializer(new SPARKS.Velocity(sphereCap));
+					var linezone = new SPARKS.LineZone( new THREE.Vector3(-100,0,0), new THREE.Vector3(100,0,0) );
 
-				sparksEmitter.addAction(new SPARKS.Age());
-				sparksEmitter.addAction(new SPARKS.Accelerate(0.2));
-				sparksEmitter.addAction(new SPARKS.Move()); 
+					sparksEmitter.addInitializer(new SPARKS.Position( linezone ) );
+					sparksEmitter.addInitializer(new SPARKS.Lifetime(2,4));
+					sparksEmitter.addInitializer(new SPARKS.Target(null, setTargetParticle));
+					sparksEmitter.addInitializer(new SPARKS.Velocity(new SPARKS.PointZone(new THREE.Vector3(0,-200,50))));
+
+
+					sparksEmitter.addAction(new SPARKS.Age());
+					sparksEmitter.addAction(new SPARKS.Move()); 
+					sparksEmitter.addAction(new SPARKS.RandomDrift(500,500,0));
 				
 				sparksEmitter.addCallback("created", onParticleCreated);
 				sparksEmitter.addCallback("dead", onParticleDead);
@@ -414,12 +417,14 @@
 
 				render();
 				stats.update();
+				SPARKS.update();
 
 			}
 			
 			var _rotation = 0;
 
 			function render() {
+				//console.log("render", sparksEmitter._particles.length);
 				
 				group.geometry.__dirtyVertices = true;
 				group.geometry.__dirtyColors = true;
@@ -438,7 +443,7 @@
 	            emitterpos.y = 100 * Math.cos(_rotation * SPARKS.Utils.DEGREE_TO_RADIAN);
 
 				renderer.render( scene, camera );
-
+				
 			}
 
 		</script>

@@ -77,8 +77,6 @@
 				stats.domElement.style.top = '0px';
 				container.appendChild( stats.domElement );
 
-				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-				
 				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
 				document.addEventListener( 'touchmove', onDocumentTouchMove, false );
@@ -99,7 +97,7 @@
 					
 					particle = new THREE.Particle( material );
 
-					particle.scale.x = particle.scale.y = 2;
+					particle.scale.x = particle.scale.y = 4;
 					group.add( particle );	
 
 					return particle;
@@ -116,40 +114,30 @@
 				};
 				
 				
-				sparksEmitter = new SPARKS.Emitter(new SPARKS.SteadyCounter(200));
+				sparksEmitter = new SPARKS.Emitter(new SPARKS.SteadyCounter(160));
 
-				var zone = new SPARKS.ParallelogramZone( new THREE.Vector3(-100,-100,0), new THREE.Vector3(200,0,0),
-				 new THREE.Vector3(0,200,0)	);
+				var linezone = new SPARKS.LineZone( new THREE.Vector3(-100,0,0), new THREE.Vector3(100,0,0) );
 				
-				sparksEmitter.addInitializer(new SPARKS.Position( zone ) );
+				sparksEmitter.addInitializer(new SPARKS.Position( linezone ) );
 				sparksEmitter.addInitializer(new SPARKS.Lifetime(2,4));
 				sparksEmitter.addInitializer(new SPARKS.Target(null, callback));
-				sparksEmitter.addInitializer(new SPARKS.Velocity(new SPARKS.PointZone(new THREE.Vector3(0,00,100))));
+				sparksEmitter.addInitializer(new SPARKS.Velocity(new SPARKS.PointZone(new THREE.Vector3(0,-200,50))));
 				
 
 				sparksEmitter.addAction(new SPARKS.Age());
 				sparksEmitter.addAction(new SPARKS.Move()); 
 				sparksEmitter.addAction(new SPARKS.RandomDrift(500,500,0));
-				sparksEmitter.addAction(new SPARKS.Accelerate(0,0,100));
+				//sparksEmitter.addAction(new SPARKS.Accelerate(0,-100,0));
 				
 				
 				sparksEmitter.addCallback("created", onParticleCreated);
 				sparksEmitter.addCallback("dead", onParticleDead);
-				
+
 				sparksEmitter.start();
 
 			}
 
 			//
-			function onDocumentMouseDown( event ) {
-
-				if (sparksEmitter.isRunning()) {
-					sparksEmitter.stop();
-				} else {
-					sparksEmitter.start();
-				}
-			}
-			
 
 			function onDocumentMouseMove( event ) {
 
@@ -189,6 +177,7 @@
 
 				render();
 				stats.update();
+				SPARKS.update();
 
 			}
 			

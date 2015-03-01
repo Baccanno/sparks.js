@@ -116,7 +116,7 @@
 				info.style.top = '10px';
 				info.style.width = '100%';
 				info.style.textAlign = 'center';
-				info.innerHTML = 'Three.js with WebGL Love. Simple Particle Systems with Shapes by <a href="http://www.lab4games.net/zz85/blog">zz85</a><br/>Move your mouse. Click to pause/resume.';
+				info.innerHTML = 'Particles with bezier. A Sparks.js Particle Project by <a href="http://www.lab4games.net/zz85/blog">zz85</a><br/>Move your mouse. Click to pause/resume.';
 				container.appendChild( info );
 
 				// CAMERA
@@ -140,7 +140,7 @@
 
 				// TEXT
 
-				var theText = "THREE.JS";
+				var theText = "NUSSO";
 
 				// Get text from hash
 
@@ -193,6 +193,15 @@
 				parent = new THREE.Object3D();
                 parent.add( text );
 				scene.add( parent );
+				
+				
+				particleCount = 20000; // 20 fps 20k
+				particlePoints = THREE.GeometryUtils.randomPointsInGeometry( text3d, particleCount ); //100000
+				// for ( i = 0; i < points.length; i ++ )  {
+				// 
+				// 	geometry2.vertices.push( new THREE.Vertex( points[ i ] ) );
+				// 
+				// }
 
 				///// Create particle objects for Three.js
 
@@ -282,24 +291,6 @@
 					var context = canvas.getContext( '2d' );
 
 
-					// Just a square, doesnt work too bad with blur pp.
-					// context.fillStyle = "white";
-					// context.strokeStyle = "white";
-					// context.fillRect(0, 0, 63, 63) ;
-
-					// Heart Shapes are not too pretty here
-					// var x = 4, y = 0;
-					// context.save();
-					// context.scale(8, 8); // Scale so canvas render can redraw within bounds
-					// context.beginPath();
-					// context.bezierCurveTo( x + 2.5, y + 2.5, x + 2.0, y, x, y );
-					// context.bezierCurveTo( x - 3.0, y, x - 3.0, y + 3.5,x - 3.0,y + 3.5 );
-					// context.bezierCurveTo( x - 3.0, y + 5.5, x - 1.0, y + 7.7, x + 2.5, y + 9.5 );
-					// context.bezierCurveTo( x + 6.0, y + 7.7, x + 8.0, y + 5.5, x + 8.0, y + 3.5 );
-					// context.bezierCurveTo( x + 8.0, y + 3.5, x + 8.0, y, x + 5.0, y );
-					// context.bezierCurveTo( x + 3.5, y, x + 2.5, y + 2.5, x + 2.5, y + 2.5 );
-					// context.closePath();
-
 					context.beginPath();
 					context.arc( 64, 64, 60, 0, Math.PI * 2, false) ;
 					context.closePath();
@@ -351,7 +342,7 @@
 
 				for( var v = 0; v < vertices.length; v ++ ) {
 
-					values_size[ v ] = 50;
+					values_size[ v ] = 10;
 
 					values_color[ v ] = new THREE.Color( 0xffffff );
 					values_color[ v ].setHSV( 0, 0, 0 );
@@ -367,20 +358,8 @@
 				// Create Particle Systems
 
 				// EMITTER STUFF
-
-				// Heart
-
-				var x = 0, y = 0;
-
-				heartShape = new THREE.Shape();
-
-				heartShape.moveTo( x + 25, y + 25 );
-				heartShape.bezierCurveTo( x + 25, y + 25, x + 20, y, x, y );
-				heartShape.bezierCurveTo( x - 30, y, x - 30, y + 35,x - 30,y + 35 );
-				heartShape.bezierCurveTo( x - 30, y + 55, x - 10, y + 77, x + 25, y + 95 );
-				heartShape.bezierCurveTo( x + 60, y + 77, x + 80, y + 55, x + 80, y + 35 );
-				heartShape.bezierCurveTo( x + 80, y + 35, x + 80, y, x + 50, y );
-				heartShape.bezierCurveTo( x + 35, y, x + 25, y + 25, x + 25, y + 25 );
+				
+	
 
 
 				var hue = 0;
@@ -388,16 +367,21 @@
 				var setTargetParticle = function() {
 
 					var target = Pool.get();
-					values_size[ target ] = Math.random() * 100 + 100;
+					values_size[ target ] = 14;
 
 					return target;
 
 				};
+				
+				textCounter = 0;
 
 				var onParticleCreated = function( p ) {
 
 					var position = p.position;
 					p.target.position = position;
+
+					targetPos = particlePoints[textCounter++];
+					position.set(targetPos.x, targetPos.y, targetPos.z);
 
 					var target = p.target;
 
@@ -410,20 +394,9 @@
 						hue += 0.0003 * delta;
 						if ( hue > 1 ) hue -= 1;
 
-						// TODO Create a PointOnShape Action/Zone in the particle engine
-
-						timeOnShapePath += 0.00095 * delta;
-						if ( timeOnShapePath > 1 ) timeOnShapePath -= 1;
-
-						var pointOnShape = heartShape.getPointAt( timeOnShapePath );
-
-						emitterpos.x = pointOnShape.x * 5 - 100;
-						emitterpos.y = -pointOnShape.y * 5 + 400;
-
-						//pointLight.position.copy( emitterpos );
-						pointLight.position.x = emitterpos.x;
-						pointLight.position.y = emitterpos.y;
-						pointLight.position.z = 100;
+						// pointLight.position.x = emitterpos.x;
+						// pointLight.position.y = emitterpos.y;
+						// pointLight.position.z = 100;
 
 						particles.vertices[ target ].position = p.position;
 
@@ -433,6 +406,9 @@
 
 
 					};
+					
+					attributes.size.needsUpdate = true;
+					attributes.pcolor.needsUpdate = true;
 
 				};
 
@@ -460,22 +436,23 @@
 				};
 
 
-				sparksEmitter = new SPARKS.Emitter( new SPARKS.SteadyCounter( 500 ) );
+
+				sparksEmitter = new SPARKS.Emitter( new SPARKS.ShotCounter( particleCount ) );
 
 				emitterpos = new THREE.Vector3( 0, 0, 0 );
 
 				sparksEmitter.addInitializer( new SPARKS.Position( new SPARKS.PointZone( emitterpos ) ) );
-				sparksEmitter.addInitializer( new SPARKS.Lifetime( 1, 40 ));
+				sparksEmitter.addInitializer( new SPARKS.Lifetime( 4, 10 ));
 				sparksEmitter.addInitializer( new SPARKS.Target( null, setTargetParticle ) );
 
 
-				sparksEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 0, -5, 1 ) ) ) );
+				sparksEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 0, 0, 10 ) ) ) );
 				// TOTRY Set velocity to move away from centroid
 
 				sparksEmitter.addAction( new SPARKS.Age() );
-				sparksEmitter.addAction( new SPARKS.Accelerate( 0, 0, -50 ) );
+				sparksEmitter.addAction( new SPARKS.Accelerate( 0, 0, 5 ) );
 				sparksEmitter.addAction( new SPARKS.Move() );
-				sparksEmitter.addAction( new SPARKS.RandomDrift( 90, 100, 2000 ) );
+				//sparksEmitter.addAction( new SPARKS.RandomDrift( 90, 100, 2000 ) );
 
 
 				sparksEmitter.addCallback( "created", onParticleCreated );
@@ -503,9 +480,9 @@
 				container.appendChild( renderer.domElement );
 
 				stats = new Stats();
-				stats.domElement.style.position = 'absolute';
-				stats.domElement.style.top = '0px';
-				container.appendChild( stats.domElement );
+								stats.domElement.style.position = 'absolute';
+								stats.domElement.style.top = '0px';
+								container.appendChild( stats.domElement );
 
 				// POST PROCESSING
 
@@ -529,7 +506,7 @@
 				var effectBlurX = new THREE.ShaderPass( shaderBlur, 'texture' );
 				var effectBlurY = new THREE.ShaderPass( shaderBlur, 'texture' );
 
-				var radius = 15;
+				var radius = 5;
 				var blurAmountX = radius / window.innerWidth;
 				var blurAmountY = radius / window.innerHeight;
 
@@ -543,9 +520,9 @@
 
 				composer = new THREE.EffectComposer( renderer );
 				composer.addPass( renderScene );
-				//composer.addPass( effectBlurX );
-				//composer.addPass( effectBlurY );
-				composer.addPass( effectScreen );
+				composer.addPass( effectBlurX );
+				composer.addPass( effectBlurY );
+				//composer.addPass( effectScreen );
 				//composer.addPass( effectFilm );
 				//composer.addPass( effectFocus );
 				// Water color painting.
@@ -629,7 +606,8 @@
 				requestAnimationFrame( animate );
 
 				render();
-				stats.update();
+//				stats.update();
+				SPARKS.update();
 
 			}
 
@@ -643,11 +621,8 @@
 
 				particleCloud.geometry.__dirtyVertices = true;
 
-				attributes.size.needsUpdate = true;
-				attributes.pcolor.needsUpdate = true;
+				
 
-				// Pretty cool effect if you enable this
-				//particleCloud.rotation.y += 0.05;
 
 				parent.rotation.y += ( targetRotation - parent.rotation.y ) * 0.05;
 
@@ -655,7 +630,7 @@
 
 				//renderer.render( scene, camera );
 				composer.render( 0.1 );
-
+				stats.update();
 
 			}
 

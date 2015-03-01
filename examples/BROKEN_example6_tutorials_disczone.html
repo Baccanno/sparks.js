@@ -64,6 +64,7 @@
 
 				scene = new THREE.Scene();
 
+
 				group = new THREE.Object3D();
 				scene.add( group );
 
@@ -116,9 +117,9 @@
 				
 				sparksEmitter = new SPARKS.Emitter(new SPARKS.SteadyCounter(160));
 
-				var linezone = new SPARKS.LineZone( new THREE.Vector3(-100,0,0), new THREE.Vector3(100,0,0) );
+				var disc = new SPARKS.DiscZone( new THREE.Vector3(0,0,0), new THREE.Vector3(50,50,0) );
 				
-				sparksEmitter.addInitializer(new SPARKS.Position( linezone ) );
+				sparksEmitter.addInitializer(new SPARKS.Position( disc ) );
 				sparksEmitter.addInitializer(new SPARKS.Lifetime(2,4));
 				sparksEmitter.addInitializer(new SPARKS.Target(null, callback));
 				sparksEmitter.addInitializer(new SPARKS.Velocity(new SPARKS.PointZone(new THREE.Vector3(0,-200,50))));
@@ -126,7 +127,7 @@
 
 				sparksEmitter.addAction(new SPARKS.Age());
 				sparksEmitter.addAction(new SPARKS.Move()); 
-				sparksEmitter.addAction(new SPARKS.RandomDrift(500,500,0));
+				//sparksEmitter.addAction(new SPARKS.RandomDrift(500,500,0));
 				//sparksEmitter.addAction(new SPARKS.Accelerate(0,-100,0));
 				
 				
@@ -177,6 +178,7 @@
 
 				render();
 				stats.update();
+				SPARKS.update();
 
 			}
 			

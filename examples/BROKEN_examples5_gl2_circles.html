@@ -72,27 +72,6 @@
 
 					varying vec2 texCoord;
 
-
-
-					/* random number between 0 and 1 */
-
-					float random(vec3 scale, float seed) {
-
-					    /* use the fragment position for randomness */
-
-					    return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);
-
-					}
-					
-					vec4 getColor(vec2 coords) {
-						vec4 outColor = texture2D( texture, coords );
-
-						if ( outColor.a < 0.1 ) discard;
-						
-						//color *
-						//gl_FragColor = outColor * vec4(  vColor.xyz, 1.0 );
-						return  outColor * vec4(  vColor.xyz, 1.0 );
-					}
 					
 					void main() {
 
@@ -110,12 +89,8 @@
 
 					}
 
-
-					
-					
 				</script>
 
-				
 
 		<script type="text/javascript">
 			// Inspired from http://wonderfl.net/c/qTwn and mr doob three.js examples
@@ -157,8 +132,8 @@
 				        );
 				}
 				
+				
 				var Pool = {
-					//__particleSystemsPools
 					__pools: [],
 
 					// Get a new Vector
@@ -203,24 +178,12 @@
 				//B
 
 
-					var sprite = generateSprite() ;
-					var idata = sprite[1]
-					var canvasTexture = sprite[0];
-					
-					// var img = new Image();
-					// img.src = canvasTexture.toDataURL();
-					
-				//	document.body.appendChild(canvasTexture);
-				//ew Uint8Array(idata)
-				//var textu = new THREE.DataTexture (new Uint8Array(idata), 100,100);
-				//var textu = new THREE.Texture (canvasTexture);
-				//var textu = new THREE.Texture (idata.data, 128,128);
-				//console.log(idata);
-				
+				var sprite = generateSprite() ;
+				var idata = sprite[1]
+				var canvasTexture = sprite[0];
 				textu = new THREE.Texture ( canvasTexture );
-				// var textu = new THREE.DataTexture (new Uint8Array(idata.data), 128,128);
 				textu.needsUpdate = true;
-				//textu = createTextureFromData(128, 128, idata.data);
+				// var textu = new THREE.DataTexture (new Uint8Array(idata.data), 128,128);
 				// textu.needsUpdate = true;
 
 				uniforms = {
@@ -235,44 +198,35 @@
 				
 				function generateSprite() {
 							
-						var canvas = document.createElement( 'canvas' );
+					var canvas = document.createElement( 'canvas' );
 					canvas.width = 128;
 					canvas.height = 128;
-					
-					//16
 				
 					var context = canvas.getContext( '2d' );
 					
+					
 				
-							//context.moveTo( x + 25, y + 25 );
-							var x = 4, y = 4;
-							context.scale(8, 8);
-							
-							context.fillStyle = "white";
-							context.strokeStyle = "white";
-							context.beginPath();
-							context.bezierCurveTo( x + 2.5, y + 2.5, x + 2.0, y, x, y );
-							context.bezierCurveTo( x - 3.0, y, x - 3.0, y + 3.5,x - 3.0,y + 3.5 );
-							context.bezierCurveTo( x - 3.0, y + 5.5, x - 1.0, y + 7.7, x + 2.5, y + 9.5 );
-							context.bezierCurveTo( x + 6.0, y + 7.7, x + 8.0, y + 5.5, x + 8.0, y + 3.5 );
-							context.bezierCurveTo( x + 8.0, y + 3.5, x + 8.0, y, x + 5.0, y );
-							context.bezierCurveTo( x + 3.5, y, x + 2.5, y + 2.5, x + 2.5, y + 2.5 );
-							context.closePath();
-							
-								context.lineWidth = 0.5; //0.05
-								context.stroke();
+					context.fillStyle = "white";
+					context.strokeStyle = "white";
+					context.beginPath();
+					context.arc(64, 64, 60, 0, Math.PI*2, false);
+				
+					context.closePath();
+
+					context.lineWidth = 0.5; //0.05
+					context.stroke();
 						
-					var gradient = context.createRadialGradient( canvas.width /8, canvas.height /8, 0, canvas.width /8, canvas.height /8, canvas.width /8 );
+					var gradient = context.createRadialGradient( canvas.width /2, canvas.height /2, 0, canvas.width /2, canvas.height /2, canvas.width /2 );
 					// gradient.addColorStop( 0, 'rgba(255,255,255,1)' );
 					// gradient.addColorStop( 0.2, 'rgba(255,255,255,1)' );
 					// gradient.addColorStop( 0.8, 'rgba(128,128,128,1)' );
 					// gradient.addColorStop( 1, 'rgba(0,0,0,1)' );
 
-						gradient.addColorStop( 0, 'rgba(255,255,255,1)' );
-						gradient.addColorStop( 0.2, 'rgba(255,255,255,1)' );
-						//gradient.addColorStop( 0.6, 'rgba(200,200,200,1)' );
-						gradient.addColorStop( 0.4, 'rgba(128,128,128,1)' );
-						gradient.addColorStop( 1, 'rgba(0,0,0,1)' );
+					gradient.addColorStop( 0, 'rgba(255,255,255,1)' );
+					gradient.addColorStop( 0.2, 'rgba(255,255,255,1)' );
+					//gradient.addColorStop( 0.6, 'rgba(200,200,200,1)' );
+					gradient.addColorStop( 0.4, 'rgba(128,128,128,1)' );
+					gradient.addColorStop( 1, 'rgba(0,0,0,1)' );
 
 						
 					context.fillStyle = gradient;
@@ -280,8 +234,6 @@
 					context.fill();
 				
 					
-					//context.fillStyle = "white";
-					//context.fillRect( 0, 0, canvas.width, canvas.height );
 					var idata =context.getImageData(0, 0, canvas.width, canvas.height);
 					document.body.appendChild(canvas);
 					return [canvas, idata];
@@ -295,19 +247,15 @@
 					attributes:     attributes,
 	 
 					vertexShader:   document.getElementById( 'vertexshader' ).textContent,
-						fragmentShader: document.getElementById( 'fragmentshader' ).textContent
-
-	
-					,blending: 		THREE.AdditiveBlending,
-				depthTest: 		false,
-				transparent:	true
-			
+					fragmentShader: document.getElementById( 'fragmentshader' ).textContent
+					,
+					blending: 		THREE.AdditiveBlending,
+					depthTest: 		false,
+					transparent:	true
+				
 				});
 
-
-
 				group = new THREE.ParticleSystem( particles, shaderMaterial );
-				
 				
 				group.dynamic = true;
 				//group.sortParticles = true;
@@ -316,9 +264,6 @@
 				var values_size = attributes.size.value;
 				var values_color = attributes.ca.value;
 				
-				//console.log(values_size, values_color);
-				
-				
 				for( var v = 0; v < vertices.length; v++ ) {
 				
 					values_size[ v ] = 50;
@@ -326,7 +271,6 @@
 					values_color[ v ].setHSV( 0, 0, 0 );
 					particles.vertices[v].position.set(Number.POSITIVE_INFINITY,Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY);
 				
-	
 				}
 
 				scene.add( group );
@@ -350,15 +294,12 @@
 				//// EMITTER STUFF
 				var h = 0;
 				var k = 0.7;
-				
-				//var __particleSystemsPools = [];
+
 				// Push indics
 				
 				var setTargetParticle = function() {
 					
 					// Find available pool
-				
-					
 					var target = Pool.get();
 					values_size[target] = Math.random() * 50+5;
 					
@@ -380,7 +321,7 @@
 						
 						particles.vertices[target].position = p.position;
 						
-						values_color[target].setHSV(h, 0.8, 0.4);
+						values_color[target].setHSV(h, 0.8, 0.15);
 						
 					}; 
 					//
@@ -402,7 +343,7 @@
 				};
 				
 				
-				sparksEmitter = new SPARKS.Emitter(new SPARKS.SteadyCounter(150));
+				sparksEmitter = new SPARKS.Emitter(new SPARKS.SteadyCounter(300));
 
 				emitterpos = new THREE.Vector3(0,0,0);
 				var sphereCap = new SPARKS.SphereCapZone(0, 0, 0, 10, 0, 40);
@@ -426,12 +367,14 @@
 						//values_size[target] = Math.random()*100;
 					}
 				});
+		
+
 				sparksEmitter.start();
-				
+				console.log(sparksEmitter);
 
 			}
 
-			//
+			// End Init
 
 			function onDocumentMouseMove( event ) {
 
@@ -466,23 +409,18 @@
 
 
 			function animate(time) {
-				if (!time) time = Date.now();
-				elapsed = time - lasttime;
-			    //console.log( elapsed);
-			    lasttime = time;
-			    //sparksEmitter.update(elapsed / 1000);
-				
+
 				requestAnimationFrame( animate );
 
 				render();
 				stats.update();
+				SPARKS.update();
 
 			}
 			
 			var _rotation = 0;
 
 			function render() {
-				
 				
 				group.geometry.__dirtyVertices = true;
 				group.geometry.__dirtyColors = true;
